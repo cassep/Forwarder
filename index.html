@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>PT Bidzaksana Indonesia Logistik</title>
+        <title>PT Bidzaksana  Logistik Indonesia</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -34,7 +34,30 @@
         <link rel="stylesheet" href="assets/css/normalize.css">
         <link rel="stylesheet" href="assets/css/style.css">
         <link rel="stylesheet" href="assets/css/responsive.css">
+ <style>
+    /* CSS untuk memastikan konten berada di tengah */
+    .containervideo {
+        display: flex;                 /* Mengaktifkan Flexbox */
+        justify-content: center;       /* Mencenterkan konten secara horizontal */
+        align-items: center;           /* Mencenterkan konten secara vertikal */
+        height: 60vh;                 /* Menjadikan tinggi container sebesar viewport */
+        background-color: #f9f9f9;     /* Tambahkan background untuk visualisasi */
+    }
 
+    .contentvideo {
+        padding: 10px;
+        background-color: #f0f0f0;
+        border-radius: 8px;
+        box-shadow: 0 0 7px rgba(0, 0, 0, 0.1);
+        display: flex;                 /* Mengatur Flexbox pada konten video */
+        justify-content: center;       /* Memastikan video di dalam konten berada di tengah */
+    }
+
+    video {
+        max-width: 100%;               /* Video akan disesuaikan dengan container */
+        height: auto;                  /* Menjaga rasio aspek video */
+    }
+</style>
     </head>
     <body>
 
@@ -64,9 +87,9 @@
                     <div class="col-lg-7 col-md-9">
                         <div class="bar-content">
                             <ul class="list-unstyled list-inline">
-                                <li class="list-inline-item"><img src="assets/images/phone.png" alt="">+(021) 948 6453</li>
+                                <li class="list-inline-item"><img src="assets/images/phone.png" alt="">082315171644</li>
                                 <li class="list-inline-item"><img src="assets/images/clock.png" alt="">24 Hours Service</li>
-                                <li class="list-inline-item"><img src="assets/images/mail.png" alt="">BJI@bji.com</li>
+                                <li class="list-inline-item"><img src="assets/images/mail.png" alt="">BJI@Bidzlog.com</li>
                             </ul>
                         </div>
                     </div>
@@ -434,9 +457,16 @@
                     </div>
                     <div class="col-lg-4 d-md-none d-lg-block">
                         <div class="service-image">
-                            <img src="assets/images/service-bg.jpg" alt="" class="img-fluid">
-                        </div>
-                    </div>
+							<div class="containervideo">
+								<div class="contentvideo">
+									<video width="640" height="340" autoplay loop muted>
+										<source src="assets/images/video/bidzcakug.mp4" type="video/mp4">
+										Your browser does not support the video tag.
+									</video>
+								</div>
+							</div>
+						</div>
+											</div>
                     <div class="col-lg-4 col-md-6 services-ryt">
                         <div class="service-box d-flex">
                             <div class="box-icon">
@@ -481,11 +511,13 @@
         <!-- End Service Area -->
 
         <!-- Home About Area -->
+			
         <section class="h-about">
             <div class="container">
                 <div class="row">
                     <div class="col-md-8">
                         <div class="about-box">
+						
                             <h4>Mengapa Anda Memilih Kami</h4>
                             <img src="assets/images/heartbeat2.png" alt="">
                             <p>Pengalaman dan Keahlian:
@@ -522,8 +554,11 @@
                             </ul>
                         </div>
                     </div>
+					
                     <div class="col-md-4">
+					    
                         <div class="shedule-box">
+						
                             <div class="open-hr">
                                 <h6><i class="fa fa-clock-o"></i>Jam Buka</h6>
                                 <ul class="list-unstyled">
@@ -539,6 +574,7 @@
                             </div>
                         </div>
                     </div>
+					
                 </div>
             </div>
         </section>

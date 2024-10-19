@@ -1,0 +1,626 @@
+sop di depo
+
+1.do
+2.cek security
+3.menolak
+4. survaiy   registrsi data awal yg belum
+5. kasir trasaksi pembayara
+6.suverin  kriterian 
+7. lembar suveyor  tdk ada kerusankan masuk avilebel
+8. quaity control   eir in  ke kasir
+9 .trassaksi 
+
+082315171644 PT. Bidzasana logistik indonesia
+
+tabel baru DO
+1. consinee
+notipy part
+
+cargo pickup location
+surveyor
+EIR IN EQUITMENT INTERCHANG RECEPTIN
+OR IN 
+SPLIT LO ADM
+
+
+CREATE TABLE delivery_orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_number VARCHAR(50) NOT NULL,       -- Nomor unik untuk delivery order
+    surveyor_id INT,                         -- ID dari surveyor yang menangani
+    client_id INT,                           -- ID dari klien yang memesan delivery order
+    shipment_id INT,                         -- ID pengiriman terkait delivery order
+    container_number VARCHAR(20),            -- Nomor kontainer jika terkait dengan pengiriman kontainer
+    delivery_date DATE NOT NULL,             -- Tanggal pengiriman
+    pickup_location VARCHAR(255),            -- Lokasi pengambilan barang
+    delivery_location VARCHAR(255),          -- Lokasi pengantaran barang
+    status ENUM('Pending', 'In Transit', 'Delivered', 'Cancelled') DEFAULT 'Pending', -- Status delivery order
+    remarks TEXT,                            -- Catatan tambahan
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Tanggal pembuatan
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Tanggal pembaruan terakhir
+);
+
+Penjelasan Kolom:
+
+    id: Primary key yang mengidentifikasi setiap record secara unik.
+    order_number: Nomor unik untuk setiap delivery order.
+    surveyor_id: Foreign key yang menghubungkan dengan tabel surveyor.
+    client_id: Foreign key yang menghubungkan dengan tabel klien yang memesan delivery order.
+    shipment_id: Foreign key untuk menghubungkan dengan pengiriman terkait (jika ada).
+    container_number: Nomor kontainer yang digunakan (jika relevan).
+    delivery_date: Tanggal yang direncanakan untuk pengiriman barang.
+    pickup_location: Lokasi pengambilan barang yang akan dikirim.
+    delivery_location: Lokasi tujuan pengiriman barang.
+    status: Status dari delivery order, seperti Pending, In Transit, Delivered, atau Cancelled.
+    remarks: Kolom untuk menambahkan catatan khusus terkait delivery order.
+    created_at dan updated_at: Kolom ini untuk melacak kapan delivery order dibuat dan terakhir diperbarui.
+
+CREATE TABLE surveyors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,                -- Nama lengkap surveyor
+    phone_number VARCHAR(20),                  -- Nomor telepon surveyor
+    email VARCHAR(100),                        -- Email surveyor
+    address VARCHAR(255),                      -- Alamat surveyor
+    license_number VARCHAR(50),                -- Nomor lisensi jika relevan
+    specialty VARCHAR(100),                    -- Spesialisasi surveyor (misalnya kontainer, dokumen, dll.)
+    status ENUM('Active', 'Inactive') DEFAULT 'Active',  -- Status aktif surveyor
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Tanggal pembuatan
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  -- Tanggal terakhir diperbarui
+);
+
+Penjelasan Kolom:
+
+    id: Primary key yang mengidentifikasi setiap surveyor secara unik.
+    name: Nama lengkap dari surveyor.
+    phone_number: Nomor telepon untuk menghubungi surveyor.
+    email: Email dari surveyor untuk komunikasi lebih lanjut.
+    address: Alamat tempat tinggal atau kantor surveyor.
+    license_number: Nomor lisensi resmi yang mungkin diperlukan untuk pekerjaan surveyor (opsional tergantung kebutuhan bisnis).
+    specialty: Spesialisasi atau keahlian khusus yang dimiliki oleh surveyor, seperti inspeksi kontainer, pemeriksaan dokumen, atau bidang lainnya.
+    status: Status keaktifan surveyor, bisa 'Active' atau 'Inactive' tergantung apakah surveyor tersebut masih bekerja.
+    created_at dan updated_at: Timestamp untuk melacak kapan data surveyor dibuat dan diperbarui.
+	
+CREATE TABLE surveyor_sheets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    surveyor_id INT NOT NULL,                         -- ID surveyor yang melakukan survei
+    delivery_order_id INT,                            -- ID dari delivery order yang terkait (jika ada)
+    survey_date DATE NOT NULL,                        -- Tanggal survei dilakukan
+    location VARCHAR(255),                            -- Lokasi survei dilakukan
+    findings TEXT,                                    -- Temuan atau hasil survei
+    recommendations TEXT,                             -- Rekomendasi yang diberikan oleh surveyor
+    status ENUM('Pending', 'Completed', 'Reviewed') DEFAULT 'Pending',  -- Status lembar survei
+    attachment VARCHAR(255),                          -- Path ke file lampiran (foto/dokumen) jika ada
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Tanggal pembuatan
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  -- Tanggal terakhir diperbarui
+);
+
+Penjelasan Kolom:
+
+    id: Primary key yang mengidentifikasi setiap lembar survei secara unik.
+    surveyor_id: Foreign key yang menghubungkan dengan tabel surveyors untuk mencatat siapa surveyornya.
+    delivery_order_id: Foreign key yang menghubungkan dengan tabel delivery_orders jika survei terkait dengan delivery order tertentu.
+    survey_date: Tanggal saat survei dilakukan.
+    location: Lokasi di mana survei dilakukan.
+    findings: Kolom teks untuk mencatat temuan atau hasil dari survei.
+    recommendations: Kolom teks untuk mencatat rekomendasi yang diberikan oleh surveyor.
+    status: Status dari lembar survei, misalnya:
+        Pending: Survei masih belum selesai.
+        Completed: Survei sudah selesai dilakukan.
+        Reviewed: Laporan survei telah ditinjau.
+    attachment: File path atau referensi ke dokumen lampiran (misalnya foto atau dokumen pendukung) jika ada.
+    created_at dan updated_at: Timestamp untuk melacak kapan lembar survei dibuat dan terakhir diperbarui.
+
+
+ERI adalah singkatan dari Equipment Requiring Inspection(pemeriksaan rutin)
+Berikut adalah contoh struktur tabel equipment_requiring_inspection (ERI)
+ yang dapat digunakan untuk mencatat peralatan yang membutuhkan pemeriksaan rutin:
+
+ERI
+
+CREATE TABLE equipment_requiring_inspection (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    equipment_name VARCHAR(100) NOT NULL,              -- Nama peralatan
+    equipment_type VARCHAR(100),                       -- Jenis peralatan
+    serial_number VARCHAR(50) UNIQUE,                  -- Nomor seri peralatan
+    inspection_date DATE NOT NULL,                     -- Tanggal terakhir inspeksi
+    next_inspection_date DATE NOT NULL,                -- Tanggal inspeksi berikutnya
+	grade                                              --- menujukan tingkatan A ,B,C
+    inspection_frequency ENUM('Monthly', 'Quarterly', 'Yearly') NOT NULL,  -- Frekuensi inspeksi
+    inspector_id INT,                                  -- ID dari inspektor (foreign key ke tabel inspektor atau surveyor)
+    status ENUM('Pending', 'Inspected', 'Overdue') DEFAULT 'Pending',  -- Status inspeksi  AV
+    remarks TEXT,                                      -- Catatan tambahan terkait peralatan atau inspeksi
+    location VARCHAR(255),                             -- Lokasi peralatan
+	Shiping_Line										--- nama shiping
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,    -- Tanggal pembuatan data
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  -- Tanggal terakhir diperbarui
+);
+
+Penjelasan Kolom:
+
+    id: Primary key yang mengidentifikasi setiap peralatan secara unik.
+    equipment_name: Nama peralatan yang memerlukan pemeriksaan.
+    equipment_type: Jenis peralatan, misalnya mesin, kendaraan, alat berat, dll.
+    serial_number: Nomor seri unik untuk setiap peralatan, digunakan untuk identifikasi spesifik.
+    inspection_date: Tanggal terakhir kali peralatan diinspeksi.
+    next_inspection_date: Tanggal yang dijadwalkan untuk inspeksi berikutnya.
+    inspection_frequency: Frekuensi inspeksi, dapat diatur bulanan, triwulan, atau tahunan.
+    inspector_id: Foreign key yang menghubungkan ke tabel surveyors atau inspectors yang bertanggung jawab atas pemeriksaan peralatan.
+    status: Status inspeksi peralatan:
+        Pending: Inspeksi belum dilakukan.
+        Inspected: Inspeksi sudah dilakukan.
+        Overdue: Inspeksi sudah melewati tenggat waktu yang ditentukan.
+    remarks: Catatan tambahan yang relevan mengenai kondisi peralatan atau hasil inspeksi.
+    location: Lokasi di mana peralatan tersebut berada.
+    created_at dan updated_at: Timestamp untuk melacak kapan data peralatan dibuat dan terakhir diperbarui.	
+ AV biasanya merupakan singkatan dari Available. I
+    Status AV pada kendaraan bisa berarti kendaraan tersebut dalam kondisi siap untuk digunakan dalam operasi pengiriman atau distribusi.
+	
+	
+	
+	CREATE TABLE estimates_of_repair (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    equipment_id INT NOT NULL,                       -- ID peralatan yang akan diperbaiki (foreign key ke tabel peralatan)
+    estimate_number VARCHAR(50) NOT NULL,           -- Nomor estimasi unik
+    request_date DATE NOT NULL,                      -- Tanggal permintaan estimasi
+    repair_description TEXT NOT NULL,                -- Deskripsi perbaikan yang diperlukan
+    estimated_cost DECIMAL(10, 2) NOT NULL,         -- Estimasi biaya perbaikan
+    estimated_time VARCHAR(50),                       -- Waktu yang diperkirakan untuk menyelesaikan perbaikan
+    status ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',  -- Status estimasi
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Tanggal pembuatan estimasi
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  -- Tanggal terakhir diperbarui
+);
+
+Penjelasan Kolom:
+
+    id: Primary key yang mengidentifikasi setiap estimasi secara unik.
+    equipment_id: Foreign key yang menghubungkan dengan tabel peralatan yang memerlukan perbaikan.
+    estimate_number: Nomor estimasi unik untuk mengidentifikasi dokumen estimasi.
+    request_date: Tanggal saat permintaan estimasi diajukan.
+    repair_description: Deskripsi lengkap mengenai perbaikan yang diperlukan.
+    estimated_cost: Biaya yang diperkirakan untuk melakukan perbaikan.
+    estimated_time: Waktu yang diperkirakan untuk menyelesaikan perbaikan, bisa dalam satuan hari, jam, atau minggu.
+    status: Status dari estimasi, seperti Pending, Approved, atau Rejected.
+    created_at dan updated_at: Timestamp untuk melacak kapan estimasi dibuat dan terakhir diperbarui.
+	
+--OR IN(Official RECEPT IN)
+
+
+
+Untuk membuat struktur tabel Official Receipt (OR) dalam sistem logistik, 
+kita perlu menentukan beberapa elemen penting yang akan dicatat dalam tabel ini.
+ Official Receipt biasanya berfungsi sebagai bukti penerimaan pembayaran, 
+ dan mungkin memiliki kolom-kolom yang relevan dengan informasi terkait transaksi.
+
+Berikut adalah contoh struktur tabel yang dapat kamu gunakan:
+Struktur Tabel official_receipt
+
+CREATE TABLE official_receipt (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    receipt_no VARCHAR(50) NOT NULL,  -- Nomor Resi (unik)
+    receipt_date DATE NOT NULL,        -- Tanggal Penerbitan
+    payment_id INT NOT NULL,           -- ID Pembayaran terkait
+    customer_id INT NOT NULL,          -- ID Pelanggan
+	container_no VARCHAR(200) NOT NULL, -- nomor cotainer (xxxxx1,xxxxx2,xxxx3)
+    amount DECIMAL(15, 2) NOT NULL,    -- Jumlah pembayaran
+    tax_amount DECIMAL(15, 2),         -- Jumlah Pajak (jika ada)
+    total_amount DECIMAL(15, 2) NOT NULL, -- Total (Jumlah + Pajak)
+    status ENUM('paid', 'unpaid', 'partially_paid') DEFAULT 'unpaid', -- Status Pembayaran
+    notes TEXT,                        -- Catatan tambahan
+	import_change						--
+	DPP									--
+	vat									--
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Waktu pencatatan
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Waktu pembaruan terakhir
+
+    FOREIGN KEY (payment_id) REFERENCES payments(id), -- Relasi ke tabel payments
+    FOREIGN KEY (customer_id) REFERENCES customers(id) -- Relasi ke tabel customers
+);
+
+Penjelasan Kolom:
+
+    id: Kunci utama tabel.
+    receipt_no: Nomor resi yang unik sebagai identifikasi official receipt.
+    receipt_date: Tanggal penerbitan official receipt.
+    payment_id: Menghubungkan receipt dengan entitas pembayaran dari tabel payments.
+    customer_id: ID pelanggan yang mengacu pada tabel customers.
+	container_no: 
+	import_change						--
+	DPP									--
+	vat									--
+    amount: Jumlah pembayaran yang diterima tanpa pajak.
+    tax_amount: Jumlah pajak (jika ada) yang dikenakan pada transaksi.
+    total_amount: Total keseluruhan pembayaran, termasuk pajak.
+    status: Status pembayaran (dibayar, belum dibayar, atau dibayar sebagian).
+    notes: Kolom opsional untuk catatan tambahan terkait transaksi.
+    created_at & updated_at: Menyimpan informasi waktu pencatatan dan pembaruan resmi.
+	
+--	SPLIT LO ADM
+	
+	Untuk membuat struktur tabel SPLIT LO ADM yang sesuai dengan kebutuhan logistik, kamu dapat mengikuti contoh di bawah ini.
+	Tabel ini dirancang untuk mencatat pemecahan dokumen Letter of Authorization (LO) 
+
+
+CREATE TABLE split_lo_adm (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    lo_number VARCHAR(50) NOT NULL,        -- Nomor LO asli sebelum dipecah
+    split_lo_number VARCHAR(50) NOT NULL,  -- Nomor LO hasil pecahan (split)
+    split_date DATE NOT NULL,               -- Tanggal pemecahan LO
+    shipment_id INT NOT NULL,               -- ID pengiriman terkait
+    amount DECIMAL(15, 2) NOT NULL,         -- Nilai LO atau biaya pengiriman
+    admin_fee DECIMAL(15, 2) NOT NULL,      -- Biaya administrasi
+    total_amount DECIMAL(15, 2) AS (amount + admin_fee) PERSISTENT, -- Total biaya (nilai LO + biaya admin)
+    status ENUM('active', 'completed', 'canceled') DEFAULT 'active', -- Status LO (aktif, selesai, dibatalkan)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Waktu pencatatan LO
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Waktu pembaruan terakhir
+    FOREIGN KEY (shipment_id) REFERENCES shipments(id) -- Relasi ke tabel shipment
+);
+
+Penjelasan Kolom:
+
+    id: Kunci utama tabel.
+    lo_number: Nomor LO asli sebelum dilakukan pemecahan.
+    split_lo_number: Nomor LO yang dihasilkan setelah pemecahan (harus unik).
+    split_date: Tanggal saat LO dipecah menjadi beberapa bagian.
+    shipment_id: ID pengiriman terkait dari tabel shipments.
+    amount: Nilai dari LO asli atau biaya pengiriman.
+    admin_fee: Biaya administrasi yang dikenakan untuk pemecahan LO.
+    total_amount: Jumlah total dari amount dan admin_fee.
+    status: Status LO setelah pemecahan, bisa berupa 'active' (aktif), 'completed' (selesai), atau 'canceled' (dibatalkan).
+    created_at: Waktu saat record LO dipecah dibuat.
+    updated_at: Waktu terakhir kali record diperbarui.
+
+Tabel Relasi (Contoh Tabel shipments):
+
+Tabel ini juga bergantung pada shipment_id, yang mungkin berada di tabel shipments atau tabel lain yang sesuai dengan struktur 
+database logistikmu. Pastikan tabel shipments sudah ada atau kamu buat sesuai 
+dengan kebutuhan untuk menyimpan informasi pengiriman.
+
+
+Module Reference	
+
+1. Tarif reference
+
+Model reference tarif di logistik mengacu pada sistem atau modul yang digunakan untuk menentukan, mengelola, dan menghitung tarif atau biaya yang dikenakan pada berbagai layanan logistik, seperti pengiriman barang, penyimpanan, pergudangan, transportasi, atau layanan khusus lainnya. Tarif dalam logistik sangat bervariasi tergantung pada berbagai faktor, termasuk jenis layanan, jarak, berat atau volume barang, moda transportasi, dan kondisi lainnya.
+Unsur-Unsur Model Reference Tarif di Logistik:
+
+    Tarif Dasar (Base Rate): Ini adalah tarif awal yang dikenakan untuk layanan logistik tertentu. Tarif dasar biasanya dihitung berdasarkan kriteria umum seperti berat (kilogram/ton), volume (m3), atau jarak (kilometer/mil).
+        Contoh: Tarif dasar untuk pengiriman kargo menggunakan truk dari satu kota ke kota lain mungkin dihitung per kilogram dan per kilometer.
+
+    Surcharges (Tambahan Biaya): Selain tarif dasar, berbagai tambahan biaya dapat dikenakan, seperti biaya bahan bakar (fuel surcharge), biaya penanganan khusus (handling fee), biaya untuk pengiriman di daerah terpencil, biaya bea cukai, atau biaya asuransi.
+        Contoh: Pengiriman barang ke area terpencil mungkin dikenakan biaya tambahan karena akses yang lebih sulit atau jarak yang lebih jauh.
+
+    Tarif Berdasarkan Moda Transportasi: Tarif dalam logistik sangat tergantung pada moda transportasi yang digunakan, seperti darat (truk, kereta api), laut (kapal kontainer), atau udara (pesawat). Setiap moda transportasi memiliki struktur tarif yang berbeda tergantung pada kecepatan pengiriman, kapasitas angkut, dan risiko yang terkait.
+        Contoh: Tarif pengiriman udara biasanya lebih mahal daripada pengiriman laut karena lebih cepat, tetapi kapasitasnya lebih kecil dan biaya operasionalnya lebih tinggi.
+
+    Tarif Berdasarkan Layanan Tambahan: Layanan tambahan, seperti pengiriman cepat (express shipping), pengemasan khusus, atau penanganan barang berbahaya, biasanya memiliki tarif yang lebih tinggi. Model referensi tarif akan mengelola komponen tambahan ini untuk memastikan pelanggan dikenakan biaya yang sesuai.
+        Contoh: Jika barang membutuhkan penanganan khusus (misalnya barang mudah rusak atau barang berbahaya), tarif akan mencakup biaya untuk penyimpanan suhu tertentu atau transportasi khusus.
+
+    Dynamic Pricing (Harga Dinamis): Dalam beberapa sistem logistik modern, tarif bisa bersifat dinamis, di mana harga berubah berdasarkan permintaan pasar, kondisi ekonomi, musim, atau volume pengiriman. Ini sering terlihat pada pengiriman internasional, di mana harga kontainer dapat berfluktuasi secara signifikan tergantung pada kapasitas dan permintaan global.
+        Contoh: Pada musim puncak, seperti saat liburan atau promosi e-commerce besar, biaya pengiriman mungkin lebih tinggi karena tingginya permintaan.
+
+    Zoning and Regional Tariffs (Tarif Zona dan Regional): Banyak perusahaan logistik menggunakan model zonasi untuk menghitung tarif berdasarkan wilayah geografis. Setiap zona akan memiliki tarif yang berbeda tergantung pada jarak dari pusat distribusi atau tingkat kesulitan pengiriman ke area tersebut.
+        Contoh: Perusahaan pengiriman mungkin membagi negara menjadi beberapa zona, dan tarif ke zona yang lebih jauh atau lebih sulit dijangkau akan lebih tinggi.
+
+    Tarif Berdasarkan Volume atau Berat: Model tarif di logistik juga memperhitungkan apakah pengiriman dihitung berdasarkan berat aktual (actual weight) atau berat volume (volumetric weight). Berat volume sering digunakan untuk barang yang besar tapi ringan.
+        Contoh: Sebuah bantal mungkin ringan, tetapi memakan banyak ruang di truk pengiriman. Dalam hal ini, tarif akan dihitung berdasarkan volume, bukan berat aktual.
+
+    Penyesuaian Berdasarkan Kondisi Khusus: Kadang-kadang, tarif dapat disesuaikan berdasarkan kondisi tertentu, seperti kondisi cuaca ekstrem, situasi darurat, atau kendala lainnya yang mempengaruhi operasi logistik.
+        Contoh: Dalam keadaan cuaca buruk yang menghambat pengiriman darat, biaya pengiriman bisa meningkat karena memerlukan waktu lebih lama atau menggunakan rute alternatif.
+
+Contoh Struktur Tabel Tarif untuk Model Reference di Logistik:
+
+Berikut adalah contoh struktur tabel dalam database untuk mengelola model referensi tarif di sistem logistik:
+
+CREATE TABLE tariffs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    service_type VARCHAR(50) NOT NULL,       -- Jenis layanan (misalnya, pengiriman darat, laut, udara)
+    zone VARCHAR(50),                        -- Zona pengiriman (jika menggunakan zonasi)
+    weight DECIMAL(10, 2) NOT NULL,          -- Berat barang (kg)
+    volume DECIMAL(10, 2),                   -- Volume barang (m3)
+    base_rate DECIMAL(15, 2) NOT NULL,       -- Tarif dasar
+    fuel_surcharge DECIMAL(5, 2),            -- Biaya tambahan bahan bakar (%)
+    handling_fee DECIMAL(15, 2),             -- Biaya penanganan khusus
+    insurance_fee DECIMAL(15, 2),            -- Biaya asuransi
+    delivery_speed ENUM('standard', 'express'), -- Kecepatan pengiriman
+    total_rate DECIMAL(15, 2) AS (base_rate + fuel_surcharge + handling_fee + insurance_fee) PERSISTENT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+Penjelasan Kolom:
+
+    service_type: Jenis layanan logistik yang digunakan (misalnya, pengiriman darat, laut, udara).
+    zone: Zona pengiriman, jika menggunakan model zonasi.
+    weight: Berat barang yang dikirimkan.
+    volume: Volume barang (dalam m³) untuk perhitungan tarif berbasis volume.
+    base_rate: Tarif dasar untuk layanan tersebut.
+    fuel_surcharge: Tambahan biaya bahan bakar sebagai persentase dari tarif dasar.
+    handling_fee: Biaya penanganan khusus, jika ada.
+    insurance_fee: Biaya asuransi untuk barang yang dikirim.
+    delivery_speed: Kecepatan pengiriman (standar atau ekspres).
+    total_rate: Tarif total yang dihitung berdasarkan tarif dasar dan biaya tambahan.
+    created_at & updated_at: Tanggal pencatatan dan pembaruan tarif.
+
+Kesimpulan:
+
+Model reference tarif di logistik adalah sistem yang digunakan untuk menetapkan dan mengelola berbagai komponen tarif yang dikenakan 
+pada layanan logistik. Sistem ini membantu mengotomatisasi perhitungan biaya berdasarkan berbagai variabel seperti berat,
+ volume, zona, dan layanan tambahan, 
+serta memungkinkan penyesuaian dinamis sesuai kondisi pasar.
+
+
+Reference data shipping (data referensi pengiriman) adalah data statis yang digunakan dalam proses pengiriman untuk menyediakan informasi yang konsisten dan standar mengenai berbagai aspek operasional pengiriman barang. Data referensi ini biasanya tidak berubah secara sering dan digunakan oleh sistem logistik atau shipping (pengiriman) untuk memastikan akurasi, efisiensi, dan keseragaman dalam penanganan proses pengiriman.
+Jenis-jenis Reference Data Shipping:
+
+    Pelabuhan (Ports): Daftar pelabuhan yang digunakan untuk keberangkatan dan tujuan pengiriman barang via laut. Pelabuhan bisa diidentifikasi menggunakan kode standar seperti UN/LOCODE (United Nations Code for Trade and Transport Locations).
+        Contoh: Pelabuhan Tanjung Priok (ID TPP), Pelabuhan Singapore (SG SIN).
+
+    Kode Negara (Country Codes): Data referensi ini berisi kode-kode yang digunakan untuk mengidentifikasi negara tujuan atau asal pengiriman. Kode negara biasanya menggunakan standar ISO 3166 (misalnya, ID untuk Indonesia, US untuk Amerika Serikat).
+
+    Kode Mata Uang (Currency Codes): Pengiriman internasional memerlukan penggunaan kode mata uang yang standar, seperti USD untuk Dolar Amerika, EUR untuk Euro, atau IDR untuk Rupiah. Kode ini penting untuk perhitungan biaya, tarif, dan invoice dalam pengiriman.
+
+    Kode Unit Pengukuran (Unit of Measurement Codes): Untuk memastikan konsistensi dalam pengukuran berat, volume, dan dimensi, referensi ini menggunakan kode standar seperti kilogram (KG), meter kubik (CBM), liter (L), atau unit lainnya yang sesuai.
+
+    Jenis Kontainer (Container Types): Daftar jenis kontainer yang digunakan untuk pengiriman barang, termasuk ukuran dan spesifikasinya. Biasanya diidentifikasi oleh kode ISO 6346, yang mengklasifikasikan jenis kontainer berdasarkan ukuran (misalnya, 20FT, 40FT, 45FT).
+        Contoh: Kontainer 20 kaki, 40 kaki, kontainer reefer (kontainer berpendingin).
+
+    Incoterms: Incoterms (International Commercial Terms) adalah aturan standar yang digunakan dalam perdagangan internasional untuk menentukan siapa yang bertanggung jawab atas biaya dan risiko selama pengiriman. Contoh Incoterms adalah FOB (Free on Board), CIF (Cost, Insurance, and Freight), DAP (Delivered at Place).
+
+    Jenis Moda Transportasi (Modes of Transport): Reference data ini mendefinisikan moda transportasi yang digunakan dalam pengiriman, seperti air (udara), sea (laut), road (darat), atau rail (kereta api).
+
+    Jenis Barang (Goods or Commodity Codes): Untuk klasifikasi barang yang dikirim, biasanya menggunakan kode komoditas standar seperti HS Code (Harmonized System), yang digunakan di seluruh dunia untuk klasifikasi barang perdagangan internasional.
+        Contoh: 8471 untuk komputer, 6109 untuk pakaian rajut.
+
+    Service Level Codes (Kode Tingkat Layanan): Reference data ini berisi kode-kode untuk mengidentifikasi tingkat layanan pengiriman, seperti pengiriman standar, ekspres, atau layanan khusus seperti door-to-door atau port-to-port.
+
+    Rute Pengiriman (Shipping Routes): Data referensi ini berisi informasi tentang rute pengiriman yang digunakan, termasuk jalur laut, udara, dan darat yang menghubungkan berbagai pelabuhan, bandara, atau titik distribusi lainnya.
+
+    Shipping Lines and Carriers: Daftar perusahaan pelayaran atau maskapai yang menyediakan layanan pengiriman. Informasi ini termasuk nama perusahaan, kode pengangkut, dan detail lainnya yang terkait dengan layanan pengiriman mereka.
+        Contoh: Maersk, CMA CGM, DHL, FedEx.
+
+    Handling Codes (Kode Penanganan Barang): Kode ini digunakan untuk menunjukkan bagaimana barang harus ditangani selama pengiriman, seperti penanganan khusus untuk barang berbahaya (hazardous materials), barang mudah pecah, atau barang berpendingin.
+
+    Status Pengiriman (Shipping Status Codes): Kode status pengiriman digunakan untuk menunjukkan status pengiriman saat ini, seperti In Transit, Delivered, Pending Customs, atau On Hold. Ini membantu dalam melacak proses pengiriman barang.
+
+    Peraturan Kepabeanan (Customs Codes): Ini termasuk kode-kode kepabeanan dan tarif bea cukai yang mengatur proses impor dan ekspor barang antar negara. Reference data ini sangat penting untuk pengiriman internasional yang memerlukan kepatuhan terhadap peraturan bea cukai.
+
+    Data Asuransi Pengiriman (Shipping Insurance Codes): Kode atau referensi yang digunakan untuk mengelola asuransi pengiriman barang, termasuk nilai yang diasuransikan, jenis polis asuransi, dan detail lainnya yang relevan dengan asuransi barang selama pengiriman.
+
+Fungsi dan Manfaat Reference Data Shipping:
+
+    Konsistensi dan Standarisasi: Reference data shipping memastikan bahwa data yang digunakan dalam proses pengiriman konsisten dan sesuai dengan standar internasional. Ini membantu dalam mengurangi kesalahan dan meningkatkan efisiensi operasional.
+
+    Kemudahan Integrasi Sistem: Data referensi memungkinkan integrasi yang mudah antara berbagai sistem yang digunakan dalam rantai pasok atau logistik, seperti sistem manajemen transportasi (TMS), sistem manajemen gudang (WMS), dan sistem pelacakan pengiriman.
+
+    Mempermudah Pelacakan dan Monitoring: Dengan adanya data referensi seperti kode status pengiriman dan rute pengiriman, perusahaan logistik dapat dengan mudah melacak posisi barang dan memberikan informasi yang akurat kepada pelanggan.
+
+    Mendukung Proses Keputusan: Reference data shipping membantu dalam perhitungan tarif, pengelolaan risiko, pemilihan moda transportasi, serta negosiasi dengan pelanggan dan pemasok.
+
+    Memastikan Kepatuhan Regulasi: Dalam pengiriman internasional, reference data yang tepat seperti kode negara, kode kepabeanan, dan incoterms membantu perusahaan mematuhi regulasi perdagangan dan bea cukai, serta menghindari denda atau penahanan barang di pelabuhan.
+
+Contoh Implementasi dalam Sistem:
+
+Sebuah sistem manajemen logistik yang baik akan memiliki tabel-tabel referensi untuk menyimpan data-data seperti berikut:
+
+sql
+
+-- Tabel referensi untuk kode pelabuhan
+CREATE TABLE port_codes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    port_code VARCHAR(5) NOT NULL,         -- Kode UN/LOCODE pelabuhan
+    port_name VARCHAR(100) NOT NULL,       -- Nama pelabuhan
+    country_code VARCHAR(2) NOT NULL,      -- Kode negara (ISO 3166)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabel referensi untuk incoterms
+CREATE TABLE incoterms (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    incoterm_code VARCHAR(3) NOT NULL,     -- Kode Incoterm
+    description VARCHAR(255) NOT NULL,     -- Deskripsi singkat
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabel referensi untuk kode mata uang
+CREATE TABLE currency_codes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    currency_code VARCHAR(3) NOT NULL,     -- Kode ISO mata uang
+    description VARCHAR(100) NOT NULL,     -- Nama mata uang
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+Kesimpulan:
+
+Reference data shipping adalah data standar dan statis yang digunakan dalam proses pengiriman barang untuk memastikan kelancaran operasi logistik. Data ini mencakup informasi penting seperti kode pelabuhan, mata uang, incoterms, jenis kontainer, dan moda transportasi, yang membantu perusahaan logistik meningkatkan efisiensi, memastikan kepatuhan terhadap regulasi, 
+dan menyediakan layanan yang lebih baik kepada pelanggan.
+
+Reference data shipping (data referensi pengiriman) adalah data statis yang digunakan dalam proses pengiriman untuk menyediakan informasi yang konsisten dan standar mengenai berbagai aspek operasional pengiriman barang. Data referensi ini biasanya tidak berubah secara sering dan digunakan oleh sistem logistik atau shipping (pengiriman) untuk memastikan akurasi, efisiensi, dan keseragaman dalam penanganan proses pengiriman.
+Jenis-jenis Reference Data Shipping:
+
+    Pelabuhan (Ports): Daftar pelabuhan yang digunakan untuk keberangkatan dan tujuan pengiriman barang via laut. Pelabuhan bisa diidentifikasi menggunakan kode standar seperti UN/LOCODE (United Nations Code for Trade and Transport Locations).
+        Contoh: Pelabuhan Tanjung Priok (ID TPP), Pelabuhan Singapore (SG SIN).
+
+    Kode Negara (Country Codes): Data referensi ini berisi kode-kode yang digunakan untuk mengidentifikasi negara tujuan atau asal pengiriman. Kode negara biasanya menggunakan standar ISO 3166 (misalnya, ID untuk Indonesia, US untuk Amerika Serikat).
+
+    Kode Mata Uang (Currency Codes): Pengiriman internasional memerlukan penggunaan kode mata uang yang standar, seperti USD untuk Dolar Amerika, EUR untuk Euro, atau IDR untuk Rupiah. Kode ini penting untuk perhitungan biaya, tarif, dan invoice dalam pengiriman.
+
+    Kode Unit Pengukuran (Unit of Measurement Codes): Untuk memastikan konsistensi dalam pengukuran berat, volume, dan dimensi, referensi ini menggunakan kode standar seperti kilogram (KG), meter kubik (CBM), liter (L), atau unit lainnya yang sesuai.
+
+    Jenis Kontainer (Container Types): Daftar jenis kontainer yang digunakan untuk pengiriman barang, termasuk ukuran dan spesifikasinya. Biasanya diidentifikasi oleh kode ISO 6346, yang mengklasifikasikan jenis kontainer berdasarkan ukuran (misalnya, 20FT, 40FT, 45FT).
+        Contoh: Kontainer 20 kaki, 40 kaki, kontainer reefer (kontainer berpendingin).
+
+    Incoterms: Incoterms (International Commercial Terms) adalah aturan standar yang digunakan dalam perdagangan internasional untuk menentukan siapa yang bertanggung jawab atas biaya dan risiko selama pengiriman. Contoh Incoterms adalah FOB (Free on Board), CIF (Cost, Insurance, and Freight), DAP (Delivered at Place).
+
+    Jenis Moda Transportasi (Modes of Transport): Reference data ini mendefinisikan moda transportasi yang digunakan dalam pengiriman, seperti air (udara), sea (laut), road (darat), atau rail (kereta api).
+
+    Jenis Barang (Goods or Commodity Codes): Untuk klasifikasi barang yang dikirim, biasanya menggunakan kode komoditas standar seperti HS Code (Harmonized System), yang digunakan di seluruh dunia untuk klasifikasi barang perdagangan internasional.
+        Contoh: 8471 untuk komputer, 6109 untuk pakaian rajut.
+
+    Service Level Codes (Kode Tingkat Layanan): Reference data ini berisi kode-kode untuk mengidentifikasi tingkat layanan pengiriman, seperti pengiriman standar, ekspres, atau layanan khusus seperti door-to-door atau port-to-port.
+
+    Rute Pengiriman (Shipping Routes): Data referensi ini berisi informasi tentang rute pengiriman yang digunakan, termasuk jalur laut, udara, dan darat yang menghubungkan berbagai pelabuhan, bandara, atau titik distribusi lainnya.
+
+    Shipping Lines and Carriers: Daftar perusahaan pelayaran atau maskapai yang menyediakan layanan pengiriman. Informasi ini termasuk nama perusahaan, kode pengangkut, dan detail lainnya yang terkait dengan layanan pengiriman mereka.
+        Contoh: Maersk, CMA CGM, DHL, FedEx.
+
+    Handling Codes (Kode Penanganan Barang): Kode ini digunakan untuk menunjukkan bagaimana barang harus ditangani selama pengiriman, seperti penanganan khusus untuk barang berbahaya (hazardous materials), barang mudah pecah, atau barang berpendingin.
+
+    Status Pengiriman (Shipping Status Codes): Kode status pengiriman digunakan untuk menunjukkan status pengiriman saat ini, seperti In Transit, Delivered, Pending Customs, atau On Hold. Ini membantu dalam melacak proses pengiriman barang.
+
+    Peraturan Kepabeanan (Customs Codes): Ini termasuk kode-kode kepabeanan dan tarif bea cukai yang mengatur proses impor dan ekspor barang antar negara. Reference data ini sangat penting untuk pengiriman internasional yang memerlukan kepatuhan terhadap peraturan bea cukai.
+
+    Data Asuransi Pengiriman (Shipping Insurance Codes): Kode atau referensi yang digunakan untuk mengelola asuransi pengiriman barang, termasuk nilai yang diasuransikan, jenis polis asuransi, dan detail lainnya yang relevan dengan asuransi barang selama pengiriman.
+
+Fungsi dan Manfaat Reference Data Shipping:
+
+    Konsistensi dan Standarisasi: Reference data shipping memastikan bahwa data yang digunakan dalam proses pengiriman konsisten dan sesuai dengan standar internasional. Ini membantu dalam mengurangi kesalahan dan meningkatkan efisiensi operasional.
+
+    Kemudahan Integrasi Sistem: Data referensi memungkinkan integrasi yang mudah antara berbagai sistem yang digunakan dalam rantai pasok atau logistik, seperti sistem manajemen transportasi (TMS), sistem manajemen gudang (WMS), dan sistem pelacakan pengiriman.
+
+    Mempermudah Pelacakan dan Monitoring: Dengan adanya data referensi seperti kode status pengiriman dan rute pengiriman, perusahaan logistik dapat dengan mudah melacak posisi barang dan memberikan informasi yang akurat kepada pelanggan.
+
+    Mendukung Proses Keputusan: Reference data shipping membantu dalam perhitungan tarif, pengelolaan risiko, pemilihan moda transportasi, serta negosiasi dengan pelanggan dan pemasok.
+
+    Memastikan Kepatuhan Regulasi: Dalam pengiriman internasional, reference data yang tepat seperti kode negara, kode kepabeanan, dan incoterms membantu perusahaan mematuhi regulasi perdagangan dan bea cukai, serta menghindari denda atau penahanan barang di pelabuhan.
+
+Contoh Implementasi dalam Sistem:
+
+Sebuah sistem manajemen logistik yang baik akan memiliki tabel-tabel referensi untuk menyimpan data-data seperti berikut:
+
+sql
+
+-- Tabel referensi untuk kode pelabuhan
+CREATE TABLE port_codes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    port_code VARCHAR(5) NOT NULL,         -- Kode UN/LOCODE pelabuhan
+    port_name VARCHAR(100) NOT NULL,       -- Nama pelabuhan
+    country_code VARCHAR(2) NOT NULL,      -- Kode negara (ISO 3166)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabel referensi untuk incoterms
+CREATE TABLE incoterms (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    incoterm_code VARCHAR(3) NOT NULL,     -- Kode Incoterm
+    description VARCHAR(255) NOT NULL,     -- Deskripsi singkat
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabel referensi untuk kode mata uang
+CREATE TABLE currency_codes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    currency_code VARCHAR(3) NOT NULL,     -- Kode ISO mata uang
+    description VARCHAR(100) NOT NULL,     -- Nama mata uang
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+Kesimpulan:
+
+Reference data shipping adalah data standar dan statis yang digunakan dalam proses pengiriman barang untuk memastikan kelancaran operasi logistik. Data ini mencakup informasi penting seperti kode pelabuhan, mata uang, incoterms, jenis kontainer, dan moda transportasi, yang membantu perusahaan logistik meningkatkan efisiensi, memastikan kepatuhan terhadap regulasi, dan menyediakan layanan yang lebih baik kepada pelanggan.
+You said:
+payang di maksuk dengan lolo reference adalah
+ChatGPT said:
+ChatGPT
+
+Dalam konteks logistik, istilah "LoLo" (Lift-on/Lift-off) mengacu pada metode pengangkutan dan penanganan kontainer atau kargo yang menggunakan alat berat seperti crane untuk mengangkat (lift-on) dan menurunkan (lift-off) barang dari dan ke moda transportasi, biasanya kapal atau truk. Metode LoLo sering digunakan dalam operasi pengangkutan kontainer di pelabuhan atau terminal peti kemas.
+Penjelasan tentang LoLo:
+
+    Lift-on (Lo): Proses pengangkatan kontainer atau kargo ke atas kendaraan pengangkut (misalnya, kapal atau truk) menggunakan crane.
+
+    Lift-off (Lo): Proses penurunan kontainer atau kargo dari kendaraan pengangkut menggunakan crane.
+
+LoLo digunakan terutama untuk pengiriman kontainer laut atau containerized shipping, di mana kontainer dipindahkan antara kapal dan dermaga. Operasi ini sangat bergantung pada alat berat seperti crane dermaga atau mobile crane untuk memindahkan kontainer.
+LoLo dalam Konteks Logistik:
+
+    Terminal LoLo: Sebuah terminal yang menyediakan fasilitas LoLo, yaitu dermaga atau pelabuhan dengan crane besar yang digunakan untuk menangani kontainer yang diangkat dan diturunkan dari kapal. Terminal ini sering kali menangani kapal peti kemas yang membawa berbagai jenis barang dalam kontainer standar.
+
+    Kargo LoLo: Kargo yang memerlukan peralatan khusus untuk diangkat dan diturunkan, seperti kontainer ISO atau barang berukuran besar (oversized cargo) yang tidak bisa diangkut dengan moda transportasi biasa.
+
+Keuntungan dan Kekurangan LoLo:
+
+    Keuntungan:
+        Dapat menangani kontainer berukuran besar dan berat.
+        Efisien untuk pengiriman internasional yang melibatkan pengangkutan peti kemas.
+        Cocok untuk pelabuhan yang dilengkapi dengan peralatan pengangkut yang mumpuni.
+
+    Kekurangan:
+        Memerlukan infrastruktur yang mahal, seperti crane dermaga atau alat pengangkut berat.
+        Proses pengangkatan dan penurunan memakan waktu lebih lama dibandingkan metode lainnya, seperti RoRo (Roll-on/Roll-off), di mana kendaraan langsung melaju masuk ke dalam kapal tanpa diangkat.
+
+Reference dalam LoLo:
+
+LoLo reference dapat merujuk pada data atau informasi referensi terkait proses lift-on/lift-off, seperti:
+
+    Data kontainer: Informasi tentang jenis kontainer, ukuran, berat, dan detail lainnya yang diperlukan untuk proses LoLo.
+    Informasi kapal atau terminal: Data terkait dengan jadwal kapal, kapasitas crane, atau alur kerja di pelabuhan dan terminal LoLo.
+    Dokumen operasional: Berbagai dokumen yang mencakup perhitungan biaya, waktu, dan tenaga yang diperlukan untuk operasi LoLo di terminal pengiriman.
+
+Kesimpulan:
+
+LoLo reference dalam konteks logistik merujuk pada referensi atau data terkait operasi Lift-on/Lift-off yang melibatkan pengangkatan dan penurunan kargo atau kontainer dari moda transportasi menggunakan crane atau alat berat lainnya. LoLo merupakan metode yang umum dalam pengiriman kontainer internasional, terutama di pelabuhan yang menangani kontainer dengan crane.
+
+
+Shipping line reference dalam konteks logistik adalah informasi atau data yang merujuk pada perusahaan pelayaran atau operator pengiriman yang menyediakan layanan transportasi barang melalui laut. Shipping line bertanggung jawab untuk mengangkut kontainer atau kargo dari satu pelabuhan ke pelabuhan lain menggunakan kapal-kapal pengangkut barang. Data referensi ini sangat penting dalam rantai pasok logistik internasional, karena melibatkan berbagai aspek terkait dengan pengaturan pengiriman, jadwal kapal, dan penanganan kontainer.
+Elemen dari Shipping Line Reference:
+
+    Nama Perusahaan Pelayaran (Shipping Line Name): Nama perusahaan pelayaran atau operator yang menyediakan layanan pengiriman. Beberapa contoh perusahaan pelayaran terkenal adalah Maersk Line, CMA CGM, Evergreen, dan Hapag-Lloyd.
+
+    Shipping Line Code (Kode Shipping Line): Kode unik atau identifikasi yang digunakan untuk mengacu pada perusahaan pelayaran. Kode ini sering kali digunakan dalam sistem pelacakan pengiriman untuk merujuk ke operator spesifik. Misalnya, kode MSK untuk Maersk, CMA untuk CMA CGM.
+
+    Nomor Kontainer (Container Number): Nomor unik yang diberikan untuk setiap kontainer yang dioperasikan oleh shipping line. Nomor ini mengikuti standar ISO 6346 dan digunakan untuk melacak status kontainer selama pengiriman.
+        Contoh: Kontainer dengan nomor MSKU1234567 menunjukkan bahwa kontainer tersebut dioperasikan oleh Maersk (kode MSKU).
+
+    Vessel Name (Nama Kapal): Nama kapal yang digunakan oleh shipping line untuk mengangkut barang. Setiap kapal biasanya memiliki jadwal rute tertentu dan informasi terkait keberangkatan serta kedatangan di berbagai pelabuhan.
+
+    Voyage Number (Nomor Pelayaran): Nomor pelayaran adalah referensi unik yang diberikan pada setiap perjalanan kapal yang dioperasikan oleh shipping line. Nomor ini digunakan untuk melacak rute spesifik, tanggal keberangkatan, dan tanggal kedatangan kapal tersebut.
+
+    Booking Reference (Nomor Pemesanan): Nomor referensi atau kode yang digunakan untuk memesan ruang pada kapal untuk pengiriman barang. Nomor ini diberikan oleh shipping line kepada klien yang memesan layanan pengiriman.
+
+    Port of Loading (Pelabuhan Muat): Pelabuhan tempat barang atau kontainer dimuat ke kapal. Shipping line reference mencakup informasi ini untuk memastikan lokasi awal pengiriman.
+
+    Port of Discharge (Pelabuhan Bongkar): Pelabuhan tempat barang atau kontainer akan dibongkar dari kapal. Ini merupakan pelabuhan tujuan yang penting dalam dokumen pengiriman.
+
+    Schedule and ETA (Estimasi Waktu Kedatangan): Jadwal pengiriman yang mencakup tanggal dan waktu keberangkatan dari pelabuhan asal dan estimasi waktu kedatangan (ETA) di pelabuhan tujuan. Informasi ini vital untuk pelacakan barang selama proses pengiriman.
+
+    Shipping Documents (Dokumen Pengiriman): Data referensi terkait shipping line sering kali mencakup dokumen penting seperti bill of lading, yang merupakan dokumen utama dalam pengiriman barang melalui laut. Dokumen ini berisi informasi tentang pihak pengirim, penerima, deskripsi kargo, dan syarat pengiriman.
+
+Fungsi dan Manfaat Shipping Line Reference:
+
+    Pelacakan Pengiriman: Shipping line reference memungkinkan perusahaan dan pelanggan untuk melacak status pengiriman barang mereka di sepanjang rantai pasokan. Informasi ini membantu dalam mengontrol waktu pengiriman dan memastikan bahwa barang tiba sesuai jadwal.
+
+    Keamanan dan Kepastian: Dengan adanya kode kontainer dan nomor pelayaran, barang dapat dipantau secara lebih aman, meminimalisir risiko kehilangan atau salah penanganan barang.
+
+    Pengelolaan Dokumentasi: Referensi shipping line menyediakan struktur yang jelas untuk mengelola berbagai dokumen pengiriman seperti bill of lading, invoice, dan asuransi.
+
+    Integrasi Sistem: Banyak sistem manajemen logistik dan transportasi (TMS) menggunakan shipping line reference untuk mengintegrasikan data pengiriman ke dalam sistem pelacakan global, sehingga meningkatkan efisiensi operasional dan keakuratan data.
+
+Contoh Implementasi dalam Database:
+
+Jika sebuah sistem logistik ingin mencatat data shipping line untuk pelacakan pengiriman barang, maka struktur tabel database-nya bisa seperti ini:
+
+sql
+
+CREATE TABLE shipping_lines (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    shipping_line_code VARCHAR(5) NOT NULL,      -- Kode unik perusahaan pelayaran
+    shipping_line_name VARCHAR(100) NOT NULL,    -- Nama perusahaan pelayaran
+    vessel_name VARCHAR(100),                    -- Nama kapal yang digunakan
+    voyage_number VARCHAR(50),                   -- Nomor pelayaran kapal
+    container_number VARCHAR(11) NOT NULL,       -- Nomor kontainer (ISO 6346)
+    port_of_loading VARCHAR(100),                -- Pelabuhan tempat barang dimuat
+    port_of_discharge VARCHAR(100),              -- Pelabuhan tujuan barang dibongkar
+    estimated_departure TIMESTAMP,               -- Tanggal keberangkatan
+    estimated_arrival TIMESTAMP,                 -- Estimasi waktu kedatangan
+    booking_reference VARCHAR(50),               -- Nomor pemesanan
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+Contoh Data:
+
+Misalnya, sebuah perusahaan mengirimkan kontainer melalui Maersk, data shipping line-nya bisa terlihat seperti berikut:
+shipping_line_code	shipping_line_name	vessel_name	voyage_number	container_number	port_of_loading	port_of_discharge	estimated_departure	estimated_arrival	booking_reference
+MSK	Maersk Line	Maersk Denver	087E	MSKU1234567	Port of Singapore	Port of Rotterdam	2024-10-20 08:00:00	2024-10-30 14:00:00	BK123456789
+Kesimpulan:
+
+Shipping line reference adalah kumpulan informasi yang digunakan untuk mengidentifikasi dan melacak pengiriman barang oleh perusahaan pelayaran atau operator logistik. Data ini mencakup kode unik perusahaan pelayaran, nomor kontainer, nama kapal, nomor pelayaran, serta informasi pelabuhan muat dan bongkar. Reference ini sangat penting untuk memastikan pengiriman barang berjalan lancar, tepat waktu, dan sesuai dengan dokumentasi yang dibutuhkan.
+
